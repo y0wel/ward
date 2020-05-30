@@ -12,9 +12,6 @@ if (length(uses_git) == 0) {
 repo_path <-
   system("git rev-parse --show-toplevel", intern = TRUE)
 
-repo_path <-
-  "/Users/tobiasmatz/Desktop/compute-r"
-
 scan_files <- function(path = repo_path) {
   file <-
     list.files(path, recursive = TRUE)
