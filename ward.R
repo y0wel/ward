@@ -80,6 +80,7 @@ while(TRUE) {
   }
   if (startsWith(relevant_test, "etl")) {
     system('clear && printf "\\e[3J"')
+    Sys.sleep(1)
     splitted_file_path <-
       unlist(strsplit(relevant_test, split = "/"))
     file_name <-
@@ -109,6 +110,7 @@ while(TRUE) {
   }
   if (startsWith(relevant_test, "test")) {
     system('clear && printf "\\e[3J"')
+    Sys.sleep(1)
     test_path <-
       paste0(repo_path, "/", relevant_test)
     message(
