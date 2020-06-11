@@ -1,20 +1,29 @@
-uses_git <-
-  suppressWarnings(
-    system("[ -d .git ] && echo .git || git rev-parse --git-dir > /dev/null 2>&1", intern = TRUE)
-  )
-
-if (length(uses_git) == 0) {
-  message("The current directory is not a git repository! Shutting down ...")
-  Sys.sleep(2)
-  quit(save = "no")
+current_directory_uses_git <- function(dir = NULL) {
+  uses_git <-
+    suppressWarnings(
+      system(
+        paste0(dir, " [ -d .git ] && echo .git || git rev-parse --git-dir > /dev/null 2>&1"),
+        intern = TRUE
+      )
+    )
+  if (length(uses_git) == 0) {
+    message("The current directory is not a git repository! Shutting down ...")
+    Sys.sleep(2)
+    quit(save = "no")
+  } else {
+    repo_path <<-
+      system(
+        paste0(dir, "git rev-parse --show-toplevel"),
+        intern = TRUE
+      )
+  }
 }
-  
-repo_path <-
-  system("git rev-parse --show-toplevel", intern = TRUE)
 
-scan_files <- function(path = repo_path) {
+scan_files <- function(path = repo_path, allowed_file_type = ".R") {
   file <-
     list.files(path, recursive = TRUE)
+  file <-
+    file[which(endsWith(file, allowed_file_type))]
   if (length(file) == 0) {
     warning("No test files found!")
     return(NULL)
@@ -22,12 +31,12 @@ scan_files <- function(path = repo_path) {
   timestamps <-
     unlist(
       lapply(
-        list.files(path, recursive = TRUE),
+        file,
         function(x)
           as.character(
-            file.info(
+            file.mtime(
               paste0(path, "/", x)
-            )$mtime
+            )
           )
       )
     )
@@ -63,10 +72,12 @@ compare_times <- function(times_1 = t1, times_2 = t2) {
   times_2$file[which(times_2$timestamps == last_changed_file)]
 }
 
+current_directory_uses_git()
+
 t1 <-
   scan_files()
 
-while(TRUE) {
+repeat {
   t2 <-
     scan_files()
   t2 <-
