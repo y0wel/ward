@@ -1,3 +1,9 @@
+check_dependencies <- function() {
+  if (!"testthat" %in% installed.packages()) {
+    install.packages("testthat")
+  }
+}
+
 current_directory_uses_git <- function(dir = NULL) {
   uses_git <-
     suppressWarnings(
@@ -71,6 +77,8 @@ compare_times <- function(times_1 = t1, times_2 = t2) {
     max(times_2$timestamps[changed_files])
   times_2$file[which(times_2$timestamps == last_changed_file)]
 }
+
+check_dependencies()
 
 current_directory_uses_git()
 
