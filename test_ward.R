@@ -1,3 +1,15 @@
+check_dependencies <- function() {
+  dependencies <- c("testthat", "rstudioapi")
+  condition <- !dependencies %in% installed.packages()
+  if (any(condition)) {
+    install.packages(dependencies[which(condition)])
+  }
+}
+
+check_dependencies()
+
+source("~/dev/ward/utils.R")
+
 library(testthat)
 
 temp_dir <- paste0("~/ward_test_dir")
@@ -53,7 +65,7 @@ describe("scan_files()", {
       file
     )
   })
-  
+
   new_file <- "test.txt"
   file.create(new_file)
 
@@ -96,18 +108,28 @@ describe("check_file_count()", {
 
 context("compare_times()")
 describe("compare_times()", {
-  it("returns the last updated file 'test2.R'", {
+  file <- "test3.R"
+  file.create(file)
+  files_t1 <- scan_files()
+
+  file <- "test4.R"
+  Sys.sleep(1)
+  file.create(file)
+  files_t2 <- scan_files()
+
+  it("returns the last updated file 'test4.R'", {
     expect_equal(
       compare_times(times_1 = files_t1, times_2 = files_t2),
       files_t2$file[which(files_t2$timestamps == max(files_t2$timestamps))]
     )
   })
 
-  file <- "test3.R"
+  file <- "test5.R"
+  Sys.sleep(1)
   file.create(file)
   files_t2 <- scan_files()
 
-  it("returns the last updated file 'test3.R'", {
+  it("returns the last updated file 'test5.R'", {
     expect_equal(
       compare_times(times_1 = files_t1, times_2 = files_t2),
       files_t2$file[which(files_t2$timestamps == max(files_t2$timestamps))]
